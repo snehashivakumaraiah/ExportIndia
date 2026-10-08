@@ -10,6 +10,7 @@ function QuoteRequest({ product, onBack, onSubmit  }) {
     product: product.name,
     category: product.category,
     quantity: event.target.quantity.value,
+    country: event.target.country.value,
     message: event.target.message.value,
     status: "Pending",
   };
@@ -90,6 +91,7 @@ function QuoteRequest({ product, onBack, onSubmit  }) {
 
             <input
               type="text"
+              name="country"
               placeholder="Enter country"
               required
             />

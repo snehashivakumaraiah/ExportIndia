@@ -1,6 +1,6 @@
 import "../styles/Products.css";
 
-function Products({ onBack, onQuote, onDetails }) {
+function Products({ onBack, onQuote, onDetails, onSave  }) {
 
   const products = [
     {
@@ -199,6 +199,10 @@ function Products({ onBack, onQuote, onDetails }) {
 
                   <button className="quote-product" onClick={() => onQuote(product)}>
                     Request Quote
+                  </button>
+
+                  <button className="save-product" onClick={() => onSave(product)}>
+                    ⭐ Save
                   </button>
 
                 </div>

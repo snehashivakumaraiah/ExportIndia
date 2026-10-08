@@ -8,12 +8,30 @@ import BuyerDashboard from "./pages/BuyerDashboard";
 import Products from "./pages/Products";
 import QuoteRequest from "./pages/QuoteRequest";
 import ProductDetails from "./pages/ProductDetails";
+import Enquiries from "./pages/Enquiries";
+import BuyerProfile from "./pages/BuyerProfile";
+import SavedProducts from "./pages/SavedProducts";
 
 function App() {
 
   const [page, setPage] = useState("home");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [enquiries, setEnquiries] = useState([]);
+  const [savedProducts, setSavedProducts] = useState([]);
+
+  const handleSaveProduct = (product) => {
+  setSavedProducts((previous) => {
+    const alreadySaved = previous.some(
+      (item) => item.id === product.id
+    );
+
+    if (alreadySaved) {
+      return previous;
+    }
+
+    return [...previous, product];
+  });
+};
 
   return (
     <>
@@ -64,6 +82,9 @@ function App() {
         <BuyerDashboard
           onLogout={() => setPage("home")}
           onProducts={() => setPage("products")}
+          onEnquiries={() => setPage("enquiries")}
+          onProfile={() => setPage("buyer-profile")}
+          onSavedProducts={() => setPage("saved-products")}
           enquiries={enquiries}
         />
       )}
@@ -74,6 +95,7 @@ function App() {
       {page === "products" && (
         <Products
           onBack={() => setPage("buyer-dashboard")}
+          onSave={handleSaveProduct}
           onDetails={(product) => {
           setSelectedProduct(product);
           setPage("product-details");
@@ -110,6 +132,29 @@ function App() {
         />
       )}
 
+      {/* ENQUIRIES */}
+
+      {page === "enquiries" && (
+        <Enquiries
+        enquiries={enquiries}
+        onBack={() => setPage("buyer-dashboard")}
+      />
+    )}
+    {/* BUYER PROFILE */}
+
+      {page === "buyer-profile" && (
+        <BuyerProfile
+        onBack={() => setPage("buyer-dashboard")}
+        />
+      )}
+    {/* SAVED PRODUCTS */}
+
+      {page === "saved-products" && (
+        <SavedProducts
+        savedProducts={savedProducts}
+        onBack={() => setPage("buyer-dashboard")}
+        />
+      )}
     </>
   );
 }

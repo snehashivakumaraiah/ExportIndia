@@ -1,6 +1,6 @@
 import "../styles/BuyerDashboard.css";
 
-function BuyerDashboard({ onLogout, onProducts }) {
+function BuyerDashboard({ onLogout, onProducts, enquiries, onEnquiries,onProfile, onSavedProducts }) {
     const products = [
         { id: 1, name: "Copper Scrap", category: "Copper", price: "₹650 / kg", location: "Bangalore, India", seller: "ABC Metals", }, 
         { id: 2, name: "Aluminium Scrap", category: "Aluminium", price: "₹180 / kg", location: "Mumbai, India", seller: "Global Metals", }, 
@@ -106,7 +106,7 @@ function BuyerDashboard({ onLogout, onProducts }) {
               you have sent to ExportIndia.
             </p>
 
-            <button>
+            <button onClick={onEnquiries}>
               View Enquiries →
             </button>
 
@@ -128,7 +128,7 @@ function BuyerDashboard({ onLogout, onProducts }) {
               you are interested in.
             </p>
 
-            <button>
+            <button onClick={onSavedProducts}>
               View Saved →
             </button>
 
@@ -150,7 +150,7 @@ function BuyerDashboard({ onLogout, onProducts }) {
               contact information.
             </p>
 
-            <button>
+            <button onClick={onProfile}>
               View Profile →
             </button>
 
@@ -184,21 +184,51 @@ function BuyerDashboard({ onLogout, onProducts }) {
           </div>
 
 
-          <div className="empty-enquiries">
+          {enquiries.length === 0 ? (
+  <div className="empty-enquiries">
 
-            <div className="empty-icon">
-              📋
-            </div>
+    <div className="empty-icon">
+      📋
+    </div>
 
-            <h3>
-              No enquiries yet
-            </h3>
+    <h3>
+      No enquiries yet
+    </h3>
 
-            <p>
-              Your product enquiries will appear here.
-            </p>
+    <p>
+      Your product enquiries will appear here.
+    </p>
 
-          </div>
+  </div>
+) : (
+  <div className="enquiries-list">
+
+    {enquiries.map((enquiry) => (
+      <div className="enquiry-item" key={enquiry.id}>
+
+        <div>
+          <h3>{enquiry.product}</h3>
+
+          <p>
+            Quantity: {enquiry.quantity}
+          </p>
+          <p>
+            Destination: {enquiry.country}
+          </p>
+          <p>
+            {enquiry.message}
+          </p>
+        </div>
+
+        <span className="enquiry-status">
+          {enquiry.status}
+        </span>
+
+      </div>
+    ))}
+
+  </div>
+)}
 
         </section>
 
