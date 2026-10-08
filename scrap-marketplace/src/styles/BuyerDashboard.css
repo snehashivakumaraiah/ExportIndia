@@ -1,0 +1,267 @@
+.buyer-dashboard {
+  min-height: 100vh;
+  background: #f5f7f6;
+}
+
+
+/* HEADER */
+
+.dashboard-header {
+  height: 70px;
+
+  padding: 0 7%;
+
+  background: white;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-brand {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.dashboard-logo {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+
+  background: #1f6f5b;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.dashboard-user {
+  display: flex;
+  align-items: center;
+
+  gap: 20px;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dashboard-user button {
+  padding: 8px 16px;
+
+  background: white;
+
+  border: 1px solid #1f6f5b;
+
+  border-radius: 6px;
+
+  color: #1f6f5b;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+/* MAIN */
+
+.dashboard-main {
+  max-width: 1200px;
+
+  margin: auto;
+
+  padding: 55px 25px;
+}
+
+.dashboard-heading h1 {
+  margin: 8px 0;
+
+  font-size: 36px;
+  font-weight: 800;
+}
+
+.dashboard-heading > p:last-child {
+  color: #6b7280;
+
+  margin-bottom: 40px;
+}
+
+.dashboard-label {
+  color: #1f6f5b;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  letter-spacing: 1.5px;
+}
+
+
+/* CARDS */
+
+.dashboard-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 20px;
+}
+
+.dashboard-card {
+  background: white;
+
+  padding: 25px;
+
+  border-radius: 10px;
+
+  border: 1px solid #e5e7eb;
+
+  transition: 0.2s;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 7px 20px rgba(0, 0, 0, 0.07);
+}
+
+.dashboard-card-icon {
+  font-size: 32px;
+
+  margin-bottom: 15px;
+}
+
+.dashboard-card h2 {
+  font-size: 19px;
+
+  font-weight: 800;
+}
+
+.dashboard-card p {
+  color: #6b7280;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+
+  min-height: 65px;
+}
+
+.dashboard-card button {
+  margin-top: 10px;
+
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #1f6f5b;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+/* RECENT ENQUIRIES */
+
+.recent-section {
+  margin-top: 45px;
+
+  background: white;
+
+  padding: 30px;
+
+  border-radius: 10px;
+
+  border: 1px solid #e5e7eb;
+}
+
+.recent-header {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+}
+
+.recent-header h2 {
+  margin-top: 8px;
+
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.recent-header button {
+  border: none;
+
+  background: transparent;
+
+  color: #1f6f5b;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.empty-enquiries {
+  text-align: center;
+
+  padding: 50px 20px;
+}
+
+.empty-icon {
+  font-size: 40px;
+}
+
+.empty-enquiries h3 {
+  margin-bottom: 5px;
+}
+
+.empty-enquiries p {
+  color: #6b7280;
+
+  font-size: 14px;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .dashboard-header {
+    padding: 0 20px;
+  }
+
+  .dashboard-user span {
+    display: none;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-heading h1 {
+    font-size: 30px;
+  }
+
+}

@@ -1,0 +1,177 @@
+.quote-page {
+  min-height: 100vh;
+  background: #f5f7f6;
+}
+
+.quote-header {
+  height: 70px;
+
+  padding: 0 7%;
+
+  background: white;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quote-brand {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.quote-logo {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+
+  background: #1f6f5b;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.quote-header button {
+  padding: 9px 16px;
+
+  background: white;
+
+  border: 1px solid #1f6f5b;
+
+  border-radius: 6px;
+
+  color: #1f6f5b;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.quote-main {
+  max-width: 700px;
+
+  margin: auto;
+
+  padding: 55px 25px;
+}
+
+.quote-intro {
+  text-align: center;
+
+  margin-bottom: 35px;
+}
+
+.quote-label {
+  color: #1f6f5b;
+
+  font-size: 12px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.5px;
+}
+
+.quote-intro h1 {
+  margin: 8px 0;
+
+  font-size: 34px;
+
+  font-weight: 800;
+}
+
+.quote-intro p:last-child {
+  color: #6b7280;
+
+  line-height: 1.6;
+}
+
+.quote-form {
+  background: white;
+
+  padding: 35px;
+
+  border-radius: 10px;
+
+  border: 1px solid #e5e7eb;
+}
+
+.quote-form-group {
+  margin-bottom: 20px;
+}
+
+.quote-form-group label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  color: #374151;
+}
+
+.quote-form-group input,
+.quote-form-group textarea {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 12px;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 7px;
+
+  font-family: inherit;
+
+  font-size: 14px;
+}
+
+.quote-form-group textarea {
+  resize: vertical;
+}
+
+.quote-form-group input:focus,
+.quote-form-group textarea:focus {
+  outline: none;
+
+  border-color: #1f6f5b;
+}
+
+.submit-quote {
+  width: 100%;
+
+  padding: 13px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: #1f6f5b;
+
+  color: white;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.submit-quote:hover {
+  background: #185747;
+}
