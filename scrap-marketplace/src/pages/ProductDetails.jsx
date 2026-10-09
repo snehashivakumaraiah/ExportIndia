@@ -7,7 +7,7 @@ function ProductDetails({ product, onBack, onQuote }) {
       <div className="product-details-page">
         <h2>Product not found</h2>
 
-        <button onClick={onBack}>
+        <button className="app-back-button" onClick={onBack}>
           ← Back to Products
         </button>
       </div>
@@ -34,7 +34,7 @@ function ProductDetails({ product, onBack, onQuote }) {
         </div>
 
         <button
-          className="details-back"
+          className="details-back app-back-button"
           onClick={onBack}
         >
           ← Back to Products
@@ -54,6 +54,7 @@ function ProductDetails({ product, onBack, onQuote }) {
             {product.category === "Aluminium" && "⚙️"}
             {product.category === "Iron" && "🔩"}
             {product.category === "Steel" && "🏗️"}
+            {product.category === "Other" && "♻️"}
           </span>
 
         </div>
@@ -116,7 +117,7 @@ function ProductDetails({ product, onBack, onQuote }) {
               </span>
 
               <strong>
-                {product.quantity}
+                {product.available === false ? "Currently unavailable" : product.quantity}
               </strong>
 
             </div>
@@ -157,8 +158,9 @@ function ProductDetails({ product, onBack, onQuote }) {
             <button
               className="details-quote"
               onClick={() => onQuote(product)}
+              disabled={product.available === false}
             >
-              Request Quote
+              {product.available === false ? "Currently unavailable" : "Request Quote"}
             </button>
 
           </div>

@@ -1,12 +1,9 @@
 import "../styles/Login.css";
 
-function Login({ onBack }) {
+function Login({ onBack, onLogin }) {
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    // Later:
-    // Connect this to FastAPI authentication.
-    alert("Login API will be connected here.");
+    onLogin();
   };
 
   return (
@@ -80,7 +77,7 @@ function Login({ onBack }) {
           </form>
 
           <button
-            className="back-button"
+            className="app-back-button app-back-button--full"
             onClick={onBack}
           >
             ← Back to Website

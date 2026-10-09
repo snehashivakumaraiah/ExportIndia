@@ -16,7 +16,7 @@ function Enquiries({ enquiries, onBack }) {
           </span>
         </div>
 
-        <button onClick={onBack}>
+        <button className="app-back-button" onClick={onBack}>
           ← Back to Dashboard
         </button>
 
@@ -88,7 +88,11 @@ function Enquiries({ enquiries, onBack }) {
                   <p>
                     Message: {enquiry.message}
                   </p>
-
+                  {enquiry.response && (
+                    <p className="seller-response">
+                      Seller response: {enquiry.response}
+                    </p>
+                  )}
                 </div>
 
                 <span className="enquiry-status">

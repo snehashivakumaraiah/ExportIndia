@@ -48,7 +48,7 @@ function BuyerProfile({ onBack }) {
 
         </div>
 
-        <button onClick={onBack}>
+        <button className="app-back-button" onClick={onBack}>
           ← Back to Dashboard
         </button>
 

@@ -177,7 +177,7 @@ function BuyerRegister({ onBack, onLogin }) {
           {/* BACK */}
 
           <button
-            className="buyer-back"
+            className="buyer-back app-back-button app-back-button--full"
             onClick={onBack}
           >
             ← Back to ExportIndia

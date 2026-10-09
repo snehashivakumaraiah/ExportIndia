@@ -222,6 +222,12 @@
   background: #185747;
 }
 
+.details-quote:disabled,
+.details-quote:disabled:hover {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
 
 /* MOBILE */
 

@@ -62,6 +62,13 @@
   color: #555;
 }
 
+.enquiry-item .seller-response {
+  padding: 10px 12px;
+  border-left: 3px solid #1f6f5b;
+  background: #f0f7f4;
+  color: #234b3e;
+}
+
 .enquiry-status {
   background: #fff3cd;
   color: #856404;

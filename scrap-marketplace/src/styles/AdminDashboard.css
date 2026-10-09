@@ -1,0 +1,236 @@
+.admin-dashboard,
+.admin-products-page,
+.admin-enquiries-page {
+  min-height: 100vh;
+  background: #f5f7f6;
+  color: #182320;
+}
+
+.admin-header {
+  min-height: 70px;
+  padding: 0 7%;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-brand,
+.admin-header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.admin-brand {
+  gap: 10px;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.admin-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #1f6f5b;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-header-actions {
+  gap: 18px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admin-header button,
+.admin-back-button {
+  padding: 9px 15px;
+  border: 1px solid #1f6f5b;
+  border-radius: 6px;
+  background: #fff;
+  color: #1f6f5b;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-main {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 52px 25px 70px;
+}
+
+.admin-eyebrow {
+  margin: 0;
+  color: #1f6f5b;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.admin-intro h1 {
+  margin: 9px 0;
+  font-size: 36px;
+}
+
+.admin-intro > p:last-child {
+  margin: 0;
+  color: #6b7280;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 34px 0;
+}
+
+.admin-stat {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  padding: 22px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.admin-stat-icon,
+.admin-workflow-icon {
+  font-size: 29px;
+}
+
+.admin-stat p {
+  margin: 0 0 5px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.admin-stat strong {
+  font-size: 25px;
+}
+
+.admin-workflows {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.admin-workflow-card,
+.admin-recent {
+  padding: 26px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.admin-workflow-card h2 {
+  margin: 13px 0 8px;
+  font-size: 20px;
+}
+
+.admin-workflow-card p {
+  min-height: 45px;
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.admin-workflow-card button,
+.admin-recent > div button {
+  margin-top: 17px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #1f6f5b;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-recent {
+  margin-top: 24px;
+}
+
+.admin-recent h2 {
+  margin: 8px 0 0;
+}
+
+.admin-empty {
+  margin: 20px 0 0;
+  color: #6b7280;
+}
+
+.admin-recent ul {
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-recent li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 0;
+  border-top: 1px solid #edf0ef;
+}
+
+.admin-recent li div {
+  display: grid;
+  gap: 5px;
+}
+
+.admin-recent li div span {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.admin-status {
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.admin-status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.admin-status-responded {
+  background: #e3f2fd;
+  color: #155c87;
+}
+
+.admin-status-closed {
+  background: #e8ecea;
+  color: #46514d;
+}
+
+@media (max-width: 700px) {
+  .admin-header {
+    padding: 0 20px;
+  }
+
+  .admin-header-actions > span {
+    display: none;
+  }
+
+  .admin-main {
+    padding: 35px 18px 50px;
+  }
+
+  .admin-intro h1 {
+    font-size: 30px;
+  }
+
+  .admin-stats,
+  .admin-workflows {
+    grid-template-columns: 1fr;
+  }
+}

@@ -416,8 +416,36 @@ footer p {
 
 @media (max-width: 600px) {
 
+  .navbar {
+    height: 66px;
+    padding: 0 16px;
+  }
+
+  .brand {
+    gap: 7px;
+    font-size: 18px;
+    white-space: nowrap;
+  }
+
+  .small-logo {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+  }
+
   .nav-links {
     display: none;
+  }
+
+  .nav-actions {
+    gap: 6px;
+  }
+
+  .buyer-login,
+  .admin-login {
+    padding: 8px 9px;
+    font-size: 11px;
+    white-space: nowrap;
   }
 
   .hero {
@@ -446,4 +474,32 @@ footer p {
     flex-direction: column;
   }
 
+}
+
+@media (max-width: 360px) {
+  .navbar {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .brand {
+    gap: 6px;
+    font-size: 16px;
+  }
+
+  .small-logo {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+  }
+
+  .nav-actions {
+    gap: 4px;
+  }
+
+  .buyer-login,
+  .admin-login {
+    padding: 7px 6px;
+    font-size: 10px;
+  }
 }

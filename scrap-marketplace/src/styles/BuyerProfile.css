@@ -69,15 +69,15 @@
 .save-profile-button {
   width: 100%;
   padding: 14px;
-  border: none;
+  border: 1px solid #1f6f5b;
   border-radius: 7px;
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
-  background: #222;
+  background: #1f6f5b;
   color: white;
 }
 
 .save-profile-button:hover {
-  opacity: 0.9;
+  background: #185747;
 }

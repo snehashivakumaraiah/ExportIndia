@@ -19,7 +19,7 @@ function SavedProducts({ savedProducts, onBack }) {
 
         </div>
 
-        <button onClick={onBack}>
+        <button className="app-back-button" onClick={onBack}>
           ← Back to Dashboard
         </button>
 

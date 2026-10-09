@@ -1,49 +1,18 @@
 import "../styles/Products.css";
 
-function Products({ onBack, onQuote, onDetails, onSave  }) {
+import { useState } from "react";
 
-  const products = [
-    {
-      id: 1,
-      name: "Copper Scrap",
-      category: "Copper",
-      grade: "Millberry",
-      origin: "India",
-      description:
-        "High-quality copper scrap suitable for recycling and industrial applications.",
-      quantity: "Available on request"
-    },
-    {
-      id: 2,
-      name: "Aluminium Scrap",
-      category: "Aluminium",
-      grade: "Tense",
-      origin: "India",
-      description:
-        "Aluminium scrap suitable for recycling and manufacturing requirements.",
-      quantity: "Available on request"
-    },
-    {
-      id: 3,
-      name: "Iron Scrap",
-      category: "Iron",
-      grade: "Heavy Melting Scrap",
-      origin: "India",
-      description:
-        "Ferrous scrap suitable for steel mills and industrial recycling.",
-      quantity: "Available on request"
-    },
-    {
-      id: 4,
-      name: "Steel Scrap",
-      category: "Steel",
-      grade: "HMS",
-      origin: "India",
-      description:
-        "Quality steel scrap available for bulk industrial requirements.",
-      quantity: "Available on request"
-    }
-  ];
+function Products({ products, onBack, onQuote, onDetails, onSave }) {
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
+
+  const visibleProducts = products.filter((product) => {
+    const matchesSearch = `${product.name} ${product.category} ${product.grade}`
+      .toLowerCase()
+      .includes(search.trim().toLowerCase());
+
+    return matchesSearch && (!category || product.category === category);
+  });
 
   return (
     <div className="products-page">
@@ -66,7 +35,7 @@ function Products({ onBack, onQuote, onDetails, onSave  }) {
 
 
         <button
-          className="back-button"
+          className="app-back-button"
           onClick={onBack}
         >
           ← Back
@@ -104,9 +73,16 @@ function Products({ onBack, onQuote, onDetails, onSave  }) {
           <input
             type="text"
             placeholder="Search products..."
+            aria-label="Search products"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
           />
 
-          <select>
+          <select
+            aria-label="Filter by category"
+            value={category}
+            onChange={(event) => setCategory(event.target.value)}
+          >
 
             <option value="">
               All Categories
@@ -128,6 +104,10 @@ function Products({ onBack, onQuote, onDetails, onSave  }) {
               Steel
             </option>
 
+            <option value="Other">
+              Other
+            </option>
+
           </select>
 
         </div>
@@ -137,7 +117,7 @@ function Products({ onBack, onQuote, onDetails, onSave  }) {
 
         <div className="products-grid">
 
-          {products.map((product) => (
+          {visibleProducts.map((product) => (
 
             <div
               className="product-item"
@@ -151,6 +131,7 @@ function Products({ onBack, onQuote, onDetails, onSave  }) {
                   {product.category === "Aluminium" && "⚙️"}
                   {product.category === "Iron" && "🔩"}
                   {product.category === "Steel" && "🏗️"}
+                  {product.category === "Other" && "♻️"}
                 </span>
 
               </div>
@@ -170,6 +151,11 @@ function Products({ onBack, onQuote, onDetails, onSave  }) {
                   {product.description}
                 </p>
 
+                {!product.available && (
+                  <p className="product-unavailable">
+                    Currently unavailable
+                  </p>
+                )}
 
                 <div className="product-details">
 
@@ -197,7 +183,11 @@ function Products({ onBack, onQuote, onDetails, onSave  }) {
                     View Details
                   </button>
 
-                  <button className="quote-product" onClick={() => onQuote(product)}>
+                  <button
+                    className="quote-product"
+                    onClick={() => onQuote(product)}
+                    disabled={product.available === false}
+                  >
                     Request Quote
                   </button>
 
@@ -214,6 +204,11 @@ function Products({ onBack, onQuote, onDetails, onSave  }) {
           ))}
 
         </div>
+        {visibleProducts.length === 0 && (
+          <p className="products-empty">
+            No products match your search.
+          </p>
+        )}
 
       </main>
 

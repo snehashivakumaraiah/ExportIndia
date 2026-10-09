@@ -127,19 +127,3 @@
 .login-button:hover {
   background: #185747;
 }
-
-.back-button {
-  width: 100%;
-
-  margin-top: 15px;
-  padding: 12px;
-
-  background: white;
-
-  border: 1px solid #d1d5db;
-  border-radius: 7px;
-
-  cursor: pointer;
-
-  color: #4b5563;
-}
