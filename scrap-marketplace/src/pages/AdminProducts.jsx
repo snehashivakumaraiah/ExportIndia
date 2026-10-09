@@ -11,10 +11,11 @@ const emptyProduct = {
   available: true,
 };
 
-function AdminProducts({ products, onBack, onSave, onDelete }) {
+function AdminProducts({ products, loading, onBack, onSave, onDelete }) {
   const [formProduct, setFormProduct] = useState(emptyProduct);
   const [editingId, setEditingId] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const startNewProduct = () => {
     setFormProduct(emptyProduct);
@@ -28,24 +29,32 @@ function AdminProducts({ products, onBack, onSave, onDelete }) {
     setFormOpen(true);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
     const product = {
-      id: editingId ?? Date.now(),
       name: values.get("name").trim(),
       category: values.get("category"),
       grade: values.get("grade").trim(),
       origin: values.get("origin").trim(),
       description: values.get("description").trim(),
       quantity: values.get("quantity").trim(),
+      price: values.get("price") === "" ? null : Number(values.get("price")),
       available: values.get("available") === "on",
     };
 
-    onSave(product);
-    setFormOpen(false);
-    setEditingId(null);
-    setFormProduct(emptyProduct);
+    if (editingId !== null) {
+      product.id = editingId;
+    }
+
+    setSaving(true);
+    const saved = await onSave(product);
+    setSaving(false);
+    if (saved) {
+      setFormOpen(false);
+      setEditingId(null);
+      setFormProduct(emptyProduct);
+    }
   };
 
   const handleDelete = (product) => {
@@ -80,13 +89,15 @@ function AdminProducts({ products, onBack, onSave, onDelete }) {
           )}
         </div>
 
+        {loading && <p role="status">Loading products...</p>}
+
         {formOpen && (
           <form className="admin-product-form" onSubmit={handleSubmit}>
             <h2>{editingId === null ? "Add a product" : "Edit product"}</h2>
             <div className="admin-product-fields">
               <label>
                 Product name
-                <input name="name" value={formProduct.name} onChange={(event) => setFormProduct({ ...formProduct, name: event.target.value })} required />
+                <input name="name" maxLength="150" value={formProduct.name} onChange={(event) => setFormProduct({ ...formProduct, name: event.target.value })} required />
               </label>
               <label>
                 Category
@@ -100,19 +111,30 @@ function AdminProducts({ products, onBack, onSave, onDelete }) {
               </label>
               <label>
                 Grade
-                <input name="grade" value={formProduct.grade} onChange={(event) => setFormProduct({ ...formProduct, grade: event.target.value })} required />
+                <input name="grade" maxLength="100" value={formProduct.grade} onChange={(event) => setFormProduct({ ...formProduct, grade: event.target.value })} required />
               </label>
               <label>
                 Origin
-                <input name="origin" value={formProduct.origin} onChange={(event) => setFormProduct({ ...formProduct, origin: event.target.value })} required />
+                <input name="origin" maxLength="100" value={formProduct.origin} onChange={(event) => setFormProduct({ ...formProduct, origin: event.target.value })} required />
               </label>
               <label className="admin-field-wide">
                 Description
-                <textarea name="description" rows="3" value={formProduct.description} onChange={(event) => setFormProduct({ ...formProduct, description: event.target.value })} required />
+                <textarea name="description" rows="3" maxLength="5000" value={formProduct.description} onChange={(event) => setFormProduct({ ...formProduct, description: event.target.value })} required />
               </label>
               <label>
                 Available quantity / supply note
-                <input name="quantity" placeholder="e.g. 50 MT or Available on request" value={formProduct.quantity} onChange={(event) => setFormProduct({ ...formProduct, quantity: event.target.value })} required />
+                <input name="quantity" maxLength="100" placeholder="e.g. 50 MT or Available on request" value={formProduct.quantity} onChange={(event) => setFormProduct({ ...formProduct, quantity: event.target.value })} required />
+              </label>
+              <label>
+                Price (INR, optional)
+                <input
+                  name="price"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={formProduct.price ?? ""}
+                  onChange={(event) => setFormProduct({ ...formProduct, price: event.target.value })}
+                />
               </label>
               <label className="admin-availability-field">
                 <input
@@ -125,8 +147,8 @@ function AdminProducts({ products, onBack, onSave, onDelete }) {
               </label>
             </div>
             <div className="admin-form-actions">
-              <button className="admin-primary-button" type="submit">
-                {editingId === null ? "Add product" : "Save changes"}
+              <button className="admin-primary-button" type="submit" disabled={saving}>
+                {saving ? "Saving..." : editingId === null ? "Add product" : "Save changes"}
               </button>
               <button className="admin-secondary-button" type="button" onClick={() => setFormOpen(false)}>
                 Cancel
@@ -135,13 +157,13 @@ function AdminProducts({ products, onBack, onSave, onDelete }) {
           </form>
         )}
 
-        {products.length === 0 ? (
+        {!loading && products.length === 0 ? (
           <div className="admin-products-empty">
             <h2>No products yet</h2>
             <p>Add your first product to make it visible in the buyer catalog.</p>
             {!formOpen && <button className="admin-primary-button" type="button" onClick={startNewProduct}>Add Product</button>}
           </div>
-        ) : (
+        ) : products.length > 0 && (
           <div className="admin-products-list">
             {products.map((product) => (
               <article className="admin-product-row" key={product.id}>
@@ -154,6 +176,9 @@ function AdminProducts({ products, onBack, onSave, onDelete }) {
                   </div>
                   <p>{product.category} · {product.grade} · {product.origin}</p>
                   <p>{product.quantity}</p>
+                  {product.price !== null && product.price !== undefined && (
+                    <p>Price (INR): ₹{product.price}</p>
+                  )}
                   <p className="admin-product-description">{product.description}</p>
                 </div>
                 <div className="admin-product-actions">

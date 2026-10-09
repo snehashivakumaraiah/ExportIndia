@@ -1,165 +1,393 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import BuyerLogin from "./pages/BuyerLogin";
-import BuyerRegister from "./pages/BuyerRegister";
+import { api, setAccessToken } from "./api";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminEnquiries from "./pages/AdminEnquiries";
+import AdminProducts from "./pages/AdminProducts";
 import BuyerDashboard from "./pages/BuyerDashboard";
+import BuyerLogin from "./pages/BuyerLogin";
+import BuyerProfile from "./pages/BuyerProfile";
+import BuyerRegister from "./pages/BuyerRegister";
+import Enquiries from "./pages/Enquiries";
+import Home from "./pages/home";
+import Login from "./pages/login";
+import ProductDetails from "./pages/ProductDetails";
 import Products from "./pages/Products";
 import QuoteRequest from "./pages/QuoteRequest";
-import ProductDetails from "./pages/ProductDetails";
-import Enquiries from "./pages/Enquiries";
-import BuyerProfile from "./pages/BuyerProfile";
 import SavedProducts from "./pages/SavedProducts";
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminProducts from "./pages/AdminProducts";
-import AdminEnquiries from "./pages/AdminEnquiries";
-
-const initialProducts = [
-  {
-    id: 1,
-    name: "Copper Scrap",
-    category: "Copper",
-    grade: "Millberry",
-    origin: "India",
-    description:
-      "High-quality copper scrap suitable for recycling and industrial applications.",
-    quantity: "Available on request",
-    available: true,
-  },
-  {
-    id: 2,
-    name: "Aluminium Scrap",
-    category: "Aluminium",
-    grade: "Tense",
-    origin: "India",
-    description:
-      "Aluminium scrap suitable for recycling and manufacturing requirements.",
-    quantity: "Available on request",
-    available: true,
-  },
-  {
-    id: 3,
-    name: "Iron Scrap",
-    category: "Iron",
-    grade: "Heavy Melting Scrap",
-    origin: "India",
-    description:
-      "Ferrous scrap suitable for steel mills and industrial recycling.",
-    quantity: "Available on request",
-    available: true,
-  },
-  {
-    id: 4,
-    name: "Steel Scrap",
-    category: "Steel",
-    grade: "HMS",
-    origin: "India",
-    description:
-      "Quality steel scrap available for bulk industrial requirements.",
-    quantity: "Available on request",
-    available: true,
-  },
-];
 
 function App() {
-
   const [page, setPage] = useState("home");
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [postLoginAction, setPostLoginAction] = useState(null);
+  const [user, setUser] = useState(null);
   const [enquiries, setEnquiries] = useState([]);
   const [savedProducts, setSavedProducts] = useState([]);
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState("");
+  const [canRetry, setCanRetry] = useState(false);
 
-  const handleSaveProduct = (product) => {
-    setSavedProducts((previous) => {
-      const alreadySaved = previous.some(
-        (item) => item.id === product.id
-      );
+  const loadPrivateData = useCallback(async (role) => {
+    const results = await Promise.allSettled([
+      api.getEnquiries(),
+      role === "buyer" ? api.getSavedProducts() : Promise.resolve([]),
+    ]);
+    const errors = [];
+    if (results[0].status === "fulfilled") {
+      setEnquiries(results[0].value);
+    } else {
+      errors.push(`enquiries: ${results[0].reason.message}`);
+    }
+    if (results[1].status === "fulfilled") {
+      setSavedProducts(results[1].value);
+    } else {
+      errors.push(`saved products: ${results[1].reason.message}`);
+    }
+    if (errors.length) {
+      setApiError(`Could not load account data (${errors.join("; ")})`);
+      setCanRetry(true);
+    }
+  }, []);
 
-      if (alreadySaved) {
-        return previous;
+  const reloadData = useCallback(async () => {
+    setLoading(true);
+    setApiError("");
+    setCanRetry(false);
+    const results = await Promise.allSettled([
+      api.getProducts(),
+      user ? api.getCurrentUser() : Promise.resolve(null),
+    ]);
+    if (results[0].status === "fulfilled") {
+      setProducts(results[0].value);
+    } else {
+      setApiError(`Could not load products: ${results[0].reason.message}`);
+      setCanRetry(true);
+    }
+    if (user && results[1].status === "fulfilled") {
+      await loadPrivateData(user.role);
+    } else if (user && results[1].status === "rejected") {
+      setApiError(`Could not validate your session: ${results[1].reason.message}`);
+      setCanRetry(true);
+    }
+    setLoading(false);
+  }, [loadPrivateData, user]);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadInitialData = async () => {
+      const productRequest = api.getProducts();
+      const token = sessionStorage.getItem("accessToken");
+      const userRequest = token ? api.getCurrentUser() : Promise.resolve(null);
+      const [productResult, userResult] = await Promise.allSettled([
+        productRequest,
+        userRequest,
+      ]);
+
+      if (!active) {
+        return;
       }
 
-      return [...previous, product];
-    });
-  };
-
-  const handleSaveProductDetails = (product) => {
-    setProducts((previous) => {
-      const exists = previous.some((item) => item.id === product.id);
-
-      if (!exists) {
-        return [...previous, product];
+      if (productResult.status === "fulfilled") {
+        setProducts(productResult.value);
+      } else {
+        setApiError(`Could not load products: ${productResult.reason.message}`);
+        setCanRetry(true);
       }
 
-      return previous.map((item) =>
-        item.id === product.id ? product : item
+      if (userResult.status === "fulfilled" && userResult.value) {
+        setUser(userResult.value);
+        const [enquiryResult, savedResult] = await Promise.allSettled([
+          api.getEnquiries(),
+          userResult.value.role === "buyer" ? api.getSavedProducts() : Promise.resolve([]),
+        ]);
+        if (active) {
+          if (enquiryResult.status === "fulfilled") {
+            setEnquiries(enquiryResult.value);
+          } else {
+            setApiError(`Could not load enquiries: ${enquiryResult.reason.message}`);
+            setCanRetry(true);
+          }
+          if (savedResult.status === "fulfilled") {
+            setSavedProducts(savedResult.value);
+          } else {
+            setApiError(`Could not load saved products: ${savedResult.reason.message}`);
+            setCanRetry(true);
+          }
+        }
+      } else if (userResult.status === "rejected") {
+        setAccessToken(null);
+        setApiError(`Your saved session is no longer valid: ${userResult.reason.message}`);
+        setCanRetry(false);
+      }
+      if (active) {
+        setLoading(false);
+      }
+    };
+
+    loadInitialData();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const finishBuyerLogin = async (authResult) => {
+    setAccessToken(authResult.access_token);
+    setUser(authResult.user);
+    setApiError("");
+    setCanRetry(false);
+    setCanRetry(false);
+    await loadPrivateData("buyer");
+    if (postLoginAction === "quote") {
+      setPage("quote-request");
+    } else if (postLoginAction === "save" && selectedProduct) {
+      try {
+        await api.saveProduct(selectedProduct.id);
+        setSavedProducts((previous) =>
+          previous.some((product) => product.id === selectedProduct.id)
+            ? previous
+            : [...previous, selectedProduct]
+        );
+        setPage("products");
+      } catch (error) {
+        setApiError(`Could not save product: ${error.message}`);
+        setPage("products");
+      }
+    } else {
+      setPage("buyer-dashboard");
+    }
+    setPostLoginAction(null);
+  };
+
+  const handleAdminLogin = async (credentials) => {
+    try {
+      const authResult = await api.adminLogin(credentials);
+      setAccessToken(authResult.access_token);
+      setUser(authResult.user);
+      setApiError("");
+      setCanRetry(false);
+      await loadPrivateData("admin");
+      setPage("admin-dashboard");
+      return true;
+    } catch (error) {
+      setApiError(`Admin login failed: ${error.message}`);
+      setCanRetry(false);
+      return false;
+    }
+  };
+
+  const handleBuyerLogin = async (credentials) => {
+    try {
+      await finishBuyerLogin(await api.buyerLogin(credentials));
+      return true;
+    } catch (error) {
+      setApiError(`Buyer login failed: ${error.message}`);
+      setCanRetry(false);
+      return false;
+    }
+  };
+
+  const handleBuyerRegistration = async (registration) => {
+    try {
+      await finishBuyerLogin(await api.registerBuyer(registration));
+      return true;
+    } catch (error) {
+      setApiError(`Could not create buyer account: ${error.message}`);
+      setCanRetry(false);
+      return false;
+    }
+  };
+
+  const handleLogout = () => {
+    setAccessToken(null);
+    setUser(null);
+    setEnquiries([]);
+    setSavedProducts([]);
+    setPage("home");
+    setPostLoginAction(null);
+    setApiError("");
+    setCanRetry(false);
+  };
+
+  const handleSaveProduct = async (product) => {
+    if (user?.role !== "buyer") {
+      setSelectedProduct(product);
+      setPostLoginAction("save");
+      setPage("buyer-login");
+      return;
+    }
+    setApiError("");
+    setCanRetry(false);
+    try {
+      await api.saveProduct(product.id);
+      setSavedProducts((previous) =>
+        previous.some((item) => item.id === product.id)
+          ? previous
+          : [...previous, product]
       );
-    });
-    setSavedProducts((previous) =>
-      previous.map((item) => item.id === product.id ? product : item)
-    );
+    } catch (error) {
+      setApiError(`Could not save product: ${error.message}`);
+      setCanRetry(false);
+    }
   };
 
-  const handleDeleteProduct = (productId) => {
-    setProducts((previous) =>
-      previous.filter((product) => product.id !== productId)
-    );
-    setSavedProducts((previous) =>
-      previous.filter((product) => product.id !== productId)
-    );
+  const handleUnsaveProduct = async (productId) => {
+    setApiError("");
+    setCanRetry(false);
+    try {
+      await api.unsaveProduct(productId);
+      setSavedProducts((previous) =>
+        previous.filter((product) => product.id !== productId)
+      );
+    } catch (error) {
+      setApiError(`Could not remove saved product: ${error.message}`);
+    }
   };
 
-  const handleUpdateEnquiry = (updatedEnquiry) => {
-    setEnquiries((previous) =>
-      previous.map((enquiry) =>
-        enquiry.id === updatedEnquiry.id ? updatedEnquiry : enquiry
-      )
-    );
+  const handleSaveProductDetails = async (product) => {
+    setApiError("");
+    try {
+      const savedProduct = product.id
+        ? await api.updateProduct(product.id, product)
+        : await api.createProduct(product);
+      setProducts((previous) => {
+        const exists = previous.some((item) => item.id === savedProduct.id);
+        return exists
+          ? previous.map((item) => item.id === savedProduct.id ? savedProduct : item)
+          : [savedProduct, ...previous];
+      });
+      setSavedProducts((previous) =>
+        previous.map((item) => item.id === savedProduct.id ? savedProduct : item)
+      );
+      return true;
+    } catch (error) {
+      setApiError(`Could not save product: ${error.message}`);
+      setCanRetry(false);
+      return false;
+    }
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    setApiError("");
+    setCanRetry(false);
+    try {
+      await api.deleteProduct(productId);
+      setProducts((previous) =>
+        previous.filter((product) => product.id !== productId)
+      );
+      setSavedProducts((previous) =>
+        previous.filter((product) => product.id !== productId)
+      );
+      return true;
+    } catch (error) {
+      setApiError(`Could not delete product: ${error.message}`);
+      setCanRetry(false);
+      return false;
+    }
+  };
+
+  const handleSubmitEnquiry = async (enquiry) => {
+    setApiError("");
+    setCanRetry(false);
+    try {
+      const savedEnquiry = await api.createEnquiry(enquiry);
+      setEnquiries((previous) => [...previous, savedEnquiry]);
+      setPage("buyer-dashboard");
+      return true;
+    } catch (error) {
+      setApiError(`Could not submit quote request: ${error.message}`);
+      setCanRetry(false);
+      return false;
+    }
+  };
+
+  const handleUpdateEnquiry = async (updatedEnquiry) => {
+    setApiError("");
+    setCanRetry(false);
+    try {
+      const savedEnquiry = await api.updateEnquiry(
+        updatedEnquiry.id,
+        { status: updatedEnquiry.status, response: updatedEnquiry.response }
+      );
+      setEnquiries((previous) =>
+        previous.map((enquiry) =>
+          enquiry.id === savedEnquiry.id ? savedEnquiry : enquiry
+        )
+      );
+      return true;
+    } catch (error) {
+      setApiError(`Could not update enquiry: ${error.message}`);
+      setCanRetry(false);
+      return false;
+    }
+  };
+
+  const openQuote = (product) => {
+    setSelectedProduct(product);
+    if (user?.role === "buyer") {
+      setPage("quote-request");
+    } else {
+      setPostLoginAction("quote");
+      setPage("buyer-login");
+    }
   };
 
   return (
     <>
-
-      {/* HOME */}
+      {(loading || apiError) && (
+        <div
+          className={apiError ? "api-notice api-notice-error" : "api-notice"}
+          role={apiError ? "alert" : "status"}
+        >
+          {apiError || "Connecting to the marketplace API..."}
+          {apiError && canRetry && (
+            <button type="button" onClick={reloadData} disabled={loading}>
+              {loading ? "Retrying..." : "Retry"}
+            </button>
+          )}
+        </div>
+      )}
 
       {page === "home" && (
         <Home
+          products={products}
+          loading={loading}
+          onProducts={() => setPage("products")}
+          onQuote={openQuote}
           onLogin={() => setPage("admin-login")}
           onBuyerLogin={() => setPage("buyer-login")}
         />
       )}
 
-
-      {/* ADMIN LOGIN */}
-
       {page === "admin-login" && (
         <Login
           onBack={() => setPage("home")}
-          onLogin={() => setPage("admin-dashboard")}
+          onLogin={handleAdminLogin}
         />
       )}
 
-      {page === "admin-dashboard" && (
+      {user?.role === "admin" && page === "admin-dashboard" && (
         <AdminDashboard
           products={products}
           enquiries={enquiries}
-          onLogout={() => setPage("home")}
+          onLogout={handleLogout}
           onProducts={() => setPage("admin-products")}
           onEnquiries={() => setPage("admin-enquiries")}
         />
       )}
 
-      {page === "admin-products" && (
+      {user?.role === "admin" && page === "admin-products" && (
         <AdminProducts
           products={products}
+          loading={loading}
           onBack={() => setPage("admin-dashboard")}
           onSave={handleSaveProductDetails}
           onDelete={handleDeleteProduct}
         />
       )}
 
-      {page === "admin-enquiries" && (
+      {user?.role === "admin" && page === "admin-enquiries" && (
         <AdminEnquiries
           enquiries={enquiries}
           onBack={() => setPage("admin-dashboard")}
@@ -167,106 +395,97 @@ function App() {
         />
       )}
 
-
-      {/* BUYER LOGIN */}
-
       {page === "buyer-login" && (
         <BuyerLogin
           onBack={() => setPage("home")}
           onRegister={() => setPage("buyer-register")}
-          onLogin={() => setPage("buyer-dashboard")}
+          onLogin={handleBuyerLogin}
         />
       )}
-
-
-      {/* BUYER REGISTER */}
 
       {page === "buyer-register" && (
         <BuyerRegister
           onBack={() => setPage("home")}
           onLogin={() => setPage("buyer-login")}
+          onRegister={handleBuyerRegistration}
         />
       )}
 
-
-      {/* BUYER DASHBOARD */}
-
-      {page === "buyer-dashboard" && (
+      {user?.role === "buyer" && page === "buyer-dashboard" && (
         <BuyerDashboard
-          onLogout={() => setPage("home")}
+          user={user}
+          products={products}
+          enquiries={enquiries}
+          onLogout={handleLogout}
           onProducts={() => setPage("products")}
           onEnquiries={() => setPage("enquiries")}
           onProfile={() => setPage("buyer-profile")}
           onSavedProducts={() => setPage("saved-products")}
-          enquiries={enquiries}
         />
       )}
-
-
-      {/* PRODUCTS */}
 
       {page === "products" && (
         <Products
           products={products}
-          onBack={() => setPage("buyer-dashboard")}
+          loading={loading}
+          onBack={() => setPage(user?.role === "buyer" ? "buyer-dashboard" : "home")}
           onSave={handleSaveProduct}
           onDetails={(product) => {
-          setSelectedProduct(product);
-          setPage("product-details");
-          }}
-
-          onQuote={(product) => {
             setSelectedProduct(product);
-            setPage("quote-request");
+            setPage("product-details");
           }}
+          onQuote={openQuote}
         />
       )}
+
       {page === "product-details" && (
         <ProductDetails
-        product={selectedProduct}
-        onBack={() => setPage("products")}
-        onQuote={(product) => {
-        setSelectedProduct(product);
-        setPage("quote-request");
-        }}
-       />
-       )}
-
-
-      {/* REQUEST QUOTE */}
-
-      {page === "quote-request" && (
-        <QuoteRequest
           product={selectedProduct}
           onBack={() => setPage("products")}
-          onSubmit={(enquiry) => {
-            setEnquiries((previous) => [...previous, enquiry]);
-            setPage("buyer-dashboard");
+          onQuote={openQuote}
+        />
+      )}
+
+      {user?.role === "buyer" && page === "quote-request" && selectedProduct && (
+        <QuoteRequest
+          product={selectedProduct}
+          buyer={user}
+          onBack={() => setPage("products")}
+          onSubmit={handleSubmitEnquiry}
+        />
+      )}
+
+      {user?.role === "buyer" && page === "enquiries" && (
+        <Enquiries
+          enquiries={enquiries}
+          onBack={() => setPage("buyer-dashboard")}
+        />
+      )}
+
+      {user?.role === "buyer" && page === "buyer-profile" && (
+        <BuyerProfile
+          profile={user}
+          onBack={() => setPage("buyer-dashboard")}
+          onSave={async (profile) => {
+            setApiError("");
+                setCanRetry(false);
+            try {
+              const updatedUser = await api.updateProfile(profile);
+              setUser(updatedUser);
+              return true;
+            } catch (error) {
+              setApiError(`Could not save profile: ${error.message}`);
+              return false;
+            }
           }}
         />
       )}
 
-      {/* ENQUIRIES */}
-
-      {page === "enquiries" && (
-        <Enquiries
-        enquiries={enquiries}
-        onBack={() => setPage("buyer-dashboard")}
-      />
-    )}
-    {/* BUYER PROFILE */}
-
-      {page === "buyer-profile" && (
-        <BuyerProfile
-        onBack={() => setPage("buyer-dashboard")}
-        />
-      )}
-    {/* SAVED PRODUCTS */}
-
-      {page === "saved-products" && (
+      {user?.role === "buyer" && page === "saved-products" && (
         <SavedProducts
-        savedProducts={savedProducts}
-        onBack={() => setPage("buyer-dashboard")}
+          savedProducts={savedProducts}
+          onBack={() => setPage("buyer-dashboard")}
+          onUnsave={handleUnsaveProduct}
         />
       )}
     </>

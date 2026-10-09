@@ -1,6 +1,6 @@
 import "../styles/SavedProducts.css";
 
-function SavedProducts({ savedProducts, onBack }) {
+function SavedProducts({ savedProducts, onBack, onUnsave }) {
 
   return (
     <div className="saved-products-page">
@@ -81,14 +81,16 @@ function SavedProducts({ savedProducts, onBack }) {
                   </p>
 
                   <p>
-                    Price: {product.price}
+                    Quantity: {product.quantity}
                   </p>
-
                   <p>
-                    Location: {product.location}
+                    Price (INR): {product.price === null || product.price === undefined ? "On request" : `₹${product.price}`}
                   </p>
 
                 </div>
+                <button type="button" onClick={() => onUnsave(product.id)}>
+                  Remove
+                </button>
 
               </div>
 

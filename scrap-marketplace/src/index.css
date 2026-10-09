@@ -28,6 +28,37 @@ body {
   font-family: inherit;
 }
 
+.api-notice {
+  position: relative;
+  z-index: 10;
+  padding: 10px 20px;
+  background: #e7f2ee;
+  color: #185747;
+  text-align: center;
+  font-size: 14px;
+}
+
+.api-notice-error {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.api-notice button {
+  margin-left: 12px;
+  padding: 4px 10px;
+  border: 1px solid currentColor;
+  border-radius: 5px;
+  background: transparent;
+  color: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.form-error {
+  color: #991b1b;
+  font-size: 14px;
+}
+
 button,
 input,
 select,

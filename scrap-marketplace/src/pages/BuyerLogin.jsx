@@ -1,18 +1,18 @@
 import "../styles/BuyerLogin.css";
+import { useState } from "react";
 
 function BuyerLogin({ onBack, onRegister, onLogin }) {
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-      const buyer = {
-    name: "Sneha",
-    email: "sneha@example.com",
-    role: "buyer"
-    };
-
-    localStorage.setItem("buyer", JSON.stringify(buyer));
-
-    onLogin(buyer);
+    const formData = new FormData(event.currentTarget);
+    setSubmitting(true);
+    await onLogin({
+      email: formData.get("email").trim(),
+      password: formData.get("password"),
+    });
+    setSubmitting(false);
   };
 
   return (
@@ -58,6 +58,9 @@ function BuyerLogin({ onBack, onRegister, onLogin }) {
 
               <input
                 type="email"
+                name="email"
+                autoComplete="username"
+                maxLength="254"
                 placeholder="Enter your email"
                 required
               />
@@ -73,6 +76,9 @@ function BuyerLogin({ onBack, onRegister, onLogin }) {
 
               <input
                 type="password"
+                name="password"
+                autoComplete="current-password"
+                maxLength="128"
                 placeholder="Enter your password"
                 required
               />
@@ -84,9 +90,7 @@ function BuyerLogin({ onBack, onRegister, onLogin }) {
 
             <div className="buyer-forgot">
 
-              <a href="#">
-                Forgot password?
-              </a>
+              Use the email address and password you registered with.
 
             </div>
 
@@ -96,8 +100,9 @@ function BuyerLogin({ onBack, onRegister, onLogin }) {
             <button
               type="submit"
               className="buyer-login-submit"
+              disabled={submitting}
             >
-              Login
+              {submitting ? "Signing in..." : "Login"}
             </button>
 
           </form>
@@ -121,6 +126,7 @@ function BuyerLogin({ onBack, onRegister, onLogin }) {
           {/* BACK */}
 
           <button
+            type="button"
             className="buyer-back app-back-button app-back-button--full"
             onClick={onBack}
           >

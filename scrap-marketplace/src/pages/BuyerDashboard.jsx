@@ -1,12 +1,6 @@
 import "../styles/BuyerDashboard.css";
 
-function BuyerDashboard({ onLogout, onProducts, enquiries, onEnquiries,onProfile, onSavedProducts }) {
-    const products = [
-        { id: 1, name: "Copper Scrap", category: "Copper", price: "₹650 / kg", location: "Bangalore, India", seller: "ABC Metals", }, 
-        { id: 2, name: "Aluminium Scrap", category: "Aluminium", price: "₹180 / kg", location: "Mumbai, India", seller: "Global Metals", }, 
-        { id: 3, name: "Iron Scrap", category: "Iron", price: "₹45 / kg", location: "Chennai, India", seller: "India Scrap Traders", }, 
-        { id: 4, name: "Steel Scrap", category: "Steel", price: "₹55 / kg", location: "Hyderabad, India", seller: "Metal World", }, 
-    ];
+function BuyerDashboard({ user, products, onLogout, onProducts, enquiries, onEnquiries, onProfile, onSavedProducts }) {
 
   return (
     <div className="buyer-dashboard">
@@ -31,7 +25,7 @@ function BuyerDashboard({ onLogout, onProducts, enquiries, onEnquiries,onProfile
         <div className="dashboard-user">    
 
           <span>
-            Welcome, Buyer
+            Welcome, {user.name}
           </span>
 
           <button onClick={onLogout}>
@@ -54,7 +48,7 @@ function BuyerDashboard({ onLogout, onProducts, enquiries, onEnquiries,onProfile
           </p>
 
           <h1>
-            Welcome to ExportIndia
+            Welcome to ExportIndia, {user.name}
           </h1>
 
           <p>
@@ -79,10 +73,7 @@ function BuyerDashboard({ onLogout, onProducts, enquiries, onEnquiries,onProfile
               Browse Products
             </h2>
 
-            <p>
-              Explore copper, aluminium, iron,
-              steel and other scrap materials.
-            </p>
+            <p>Browse {products.length} listed scrap products and submit your requirements.</p>
 
             <button onClick={onProducts}>
               View Products →
@@ -177,7 +168,7 @@ function BuyerDashboard({ onLogout, onProducts, enquiries, onEnquiries,onProfile
 
             </div>
 
-            <button>
+            <button onClick={onEnquiries}>
               View All
             </button>
 

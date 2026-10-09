@@ -1,12 +1,29 @@
 import "../styles/BuyerRegister.css";
+import { useState } from "react";
 
-function BuyerRegister({ onBack, onLogin }) {
+function BuyerRegister({ onBack, onLogin, onRegister }) {
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // Later we will send this data to FastAPI.
-    alert("Registration API will be connected here.");
+    const values = new FormData(event.currentTarget);
+    const password = values.get("password");
+    if (password !== values.get("confirmPassword")) {
+      setFormError("The passwords do not match.");
+      return;
+    }
+    setFormError("");
+    setSubmitting(true);
+    await onRegister({
+      name: values.get("name").trim(),
+      company: values.get("company").trim(),
+      email: values.get("email").trim(),
+      phone: values.get("phone").trim(),
+      country: values.get("country").trim(),
+      password,
+    });
+    setSubmitting(false);
   };
 
   return (
@@ -52,6 +69,9 @@ function BuyerRegister({ onBack, onLogin }) {
 
               <input
                 type="text"
+                name="name"
+                autoComplete="name"
+                maxLength="150"
                 placeholder="Enter your full name"
                 required
               />
@@ -67,6 +87,9 @@ function BuyerRegister({ onBack, onLogin }) {
 
               <input
                 type="text"
+                name="company"
+                autoComplete="organization"
+                maxLength="150"
                 placeholder="Enter your company name"
                 required
               />
@@ -82,6 +105,9 @@ function BuyerRegister({ onBack, onLogin }) {
 
               <input
                 type="email"
+                name="email"
+                autoComplete="email"
+                maxLength="254"
                 placeholder="Enter your email"
                 required
               />
@@ -97,6 +123,9 @@ function BuyerRegister({ onBack, onLogin }) {
 
               <input
                 type="tel"
+                name="phone"
+                autoComplete="tel"
+                minLength="5"
                 placeholder="Enter your phone number"
                 required
               />
@@ -112,6 +141,9 @@ function BuyerRegister({ onBack, onLogin }) {
 
               <input
                 type="text"
+                name="country"
+                autoComplete="country-name"
+                maxLength="100"
                 placeholder="Enter your country"
                 required
               />
@@ -127,6 +159,10 @@ function BuyerRegister({ onBack, onLogin }) {
 
               <input
                 type="password"
+                name="password"
+                autoComplete="new-password"
+                minLength="12"
+                maxLength="128"
                 placeholder="Create a password"
                 required
               />
@@ -142,6 +178,10 @@ function BuyerRegister({ onBack, onLogin }) {
 
               <input
                 type="password"
+                name="confirmPassword"
+                autoComplete="new-password"
+                minLength="12"
+                maxLength="128"
                 placeholder="Confirm your password"
                 required
               />
@@ -149,11 +189,14 @@ function BuyerRegister({ onBack, onLogin }) {
             </div>
 
 
+            {formError && <p className="form-error" role="alert">{formError}</p>}
+
             <button
               type="submit"
               className="buyer-register-submit"
+              disabled={submitting}
             >
-              Create Account
+              {submitting ? "Creating account..." : "Create Account"}
             </button>
 
           </form>
@@ -167,7 +210,7 @@ function BuyerRegister({ onBack, onLogin }) {
               Already have an account?
             </p>
 
-            <button onClick={onLogin}>
+            <button type="button" onClick={onLogin}>
               Buyer Login
             </button>
 
@@ -177,6 +220,7 @@ function BuyerRegister({ onBack, onLogin }) {
           {/* BACK */}
 
           <button
+            type="button"
             className="buyer-back app-back-button app-back-button--full"
             onClick={onBack}
           >

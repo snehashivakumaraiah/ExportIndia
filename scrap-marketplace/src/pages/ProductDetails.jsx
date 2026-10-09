@@ -122,6 +122,11 @@ function ProductDetails({ product, onBack, onQuote }) {
 
             </div>
 
+            <div className="specification-row">
+              <span>Price (INR)</span>
+              <strong>{product.price === null || product.price === undefined ? "On request" : `₹${product.price}`}</strong>
+            </div>
+
 
             <div className="specification-row">
 

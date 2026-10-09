@@ -2,7 +2,7 @@ import "../styles/Products.css";
 
 import { useState } from "react";
 
-function Products({ products, onBack, onQuote, onDetails, onSave }) {
+function Products({ products, loading, onBack, onQuote, onDetails, onSave }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
 
@@ -117,6 +117,8 @@ function Products({ products, onBack, onQuote, onDetails, onSave }) {
 
         <div className="products-grid">
 
+          {loading && <p role="status">Loading products...</p>}
+
           {visibleProducts.map((product) => (
 
             <div
@@ -174,6 +176,11 @@ function Products({ products, onBack, onQuote, onDetails, onSave }) {
                     <strong>{product.quantity}</strong>
                   </div>
 
+                  <div>
+                    <span>Price (INR)</span>
+                    <strong>{product.price === null || product.price === undefined ? "On request" : `₹${product.price}`}</strong>
+                  </div>
+
                 </div>
 
 
@@ -204,7 +211,7 @@ function Products({ products, onBack, onQuote, onDetails, onSave }) {
           ))}
 
         </div>
-        {visibleProducts.length === 0 && (
+        {!loading && visibleProducts.length === 0 && (
           <p className="products-empty">
             No products match your search.
           </p>

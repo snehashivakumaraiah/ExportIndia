@@ -7,10 +7,13 @@ function AdminEnquiryCard({ enquiry, onUpdate }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [status, setStatus] = useState(enquiry.status);
   const [response, setResponse] = useState(enquiry.response || "");
+  const [saving, setSaving] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    onUpdate({ ...enquiry, status, response: response.trim() });
+    setSaving(true);
+    await onUpdate({ ...enquiry, status, response: response.trim() });
+    setSaving(false);
   };
 
   return (
@@ -78,7 +81,9 @@ function AdminEnquiryCard({ enquiry, onUpdate }) {
             placeholder="Add a response or update for the buyer"
           />
         </label>
-        <button className="admin-primary-button" type="submit">Save update</button>
+        <button className="admin-primary-button" type="submit" disabled={saving}>
+          {saving ? "Saving..." : "Save update"}
+        </button>
       </form>
     </article>
   );

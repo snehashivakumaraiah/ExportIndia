@@ -1,34 +1,25 @@
 import { useState } from "react";
 import "../styles/BuyerProfile.css";
 
-function BuyerProfile({ onBack }) {
-
-  const [profile, setProfile] = useState({
-    name: "",
-    company: "",
-    email: "",
-    phone: "",
-    country: "",
+function BuyerProfile({ profile, onBack, onSave }) {
+  const [formProfile, setFormProfile] = useState({
+    name: profile.name,
+    company: profile.company,
+    phone: profile.phone,
+    country: profile.country,
   });
+  const [saving, setSaving] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
-    setProfile({
-      ...profile,
-      [name]: value,
-    });
+    setFormProfile((current) => ({ ...current, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-
-    localStorage.setItem(
-      "buyerProfile",
-      JSON.stringify(profile)
-    );
-
-    alert("Profile saved successfully!");
+    setSaving(true);
+    await onSave(formProfile);
+    setSaving(false);
   };
 
   return (
@@ -85,7 +76,8 @@ function BuyerProfile({ onBack }) {
               type="text"
               name="name"
               placeholder="Enter your name"
-              value={profile.name}
+              maxLength="150"
+              value={formProfile.name}
               onChange={handleChange}
               required
             />
@@ -103,7 +95,8 @@ function BuyerProfile({ onBack }) {
               type="text"
               name="company"
               placeholder="Enter company name"
-              value={profile.company}
+              maxLength="150"
+              value={formProfile.company}
               onChange={handleChange}
               required
             />
@@ -119,11 +112,8 @@ function BuyerProfile({ onBack }) {
 
             <input
               type="email"
-              name="email"
-              placeholder="Enter email"
               value={profile.email}
-              onChange={handleChange}
-              required
+              readOnly
             />
 
           </div>
@@ -139,7 +129,9 @@ function BuyerProfile({ onBack }) {
               type="tel"
               name="phone"
               placeholder="Enter phone number"
-              value={profile.phone}
+              minLength="5"
+              maxLength="50"
+              value={formProfile.phone}
               onChange={handleChange}
               required
             />
@@ -157,7 +149,8 @@ function BuyerProfile({ onBack }) {
               type="text"
               name="country"
               placeholder="Enter country"
-              value={profile.country}
+              maxLength="100"
+              value={formProfile.country}
               onChange={handleChange}
               required
             />
@@ -168,8 +161,9 @@ function BuyerProfile({ onBack }) {
           <button
             type="submit"
             className="save-profile-button"
+            disabled={saving}
           >
-            Save Profile
+            {saving ? "Saving..." : "Save Profile"}
           </button>
 
         </form>

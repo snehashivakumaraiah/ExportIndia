@@ -1,29 +1,15 @@
-import "../styles/Home.css";
+import "../styles/home.css";
 
-function Home({ onLogin, onBuyerLogin  }) {
-
-  const products = [
-    {
-      name: "Copper Scrap",
-      description: "High-quality copper scrap for recycling and industrial use.",
-      icon: "🟤"
-    },
-    {
-      name: "Aluminium Scrap",
-      description: "Aluminium scrap suitable for recycling and manufacturing.",
-      icon: "⚙️"
-    },
-    {
-      name: "Iron & Steel Scrap",
-      description: "Ferrous scrap materials available for bulk export.",
-      icon: "🔩"
-    },
-    {
-      name: "Other Scrap Materials",
-      description: "Various recyclable and industrial scrap materials.",
-      icon: "♻️"
-    }
-  ];
+function Home({ products, loading, onProducts, onQuote, onLogin, onBuyerLogin }) {
+  const contactEmail = import.meta.env.VITE_CONTACT_EMAIL;
+  const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER?.replace(/\D/g, "");
+  const categoryIcons = {
+    Copper: "🟤",
+    Aluminium: "⚙️",
+    Iron: "🔩",
+    Steel: "🏗️",
+    Other: "♻️",
+  };
 
   return (
     <div className="home">
@@ -104,12 +90,13 @@ function Home({ onLogin, onBuyerLogin  }) {
 
           <div className="hero-buttons">
 
-            <a
-              href="#products"
+            <button
+              type="button"
+              onClick={onProducts}
               className="primary-action"
             >
               View Products
-            </a>
+            </button>
 
             <a
               href="#contact"
@@ -156,7 +143,7 @@ function Home({ onLogin, onBuyerLogin  }) {
 
         <div className="product-grid">
 
-          {products.map((product) => (
+          {products.slice(0, 4).map((product) => (
 
             <div
               className="product-card"
@@ -164,18 +151,16 @@ function Home({ onLogin, onBuyerLogin  }) {
             >
 
               <div className="product-icon">
-                {product.icon}
+                {categoryIcons[product.category] || "♻️"}
               </div>
 
               <h3>
                 {product.name}
               </h3>
 
-              <p>
-                {product.description}
-              </p>
+              <p>{product.description || `${product.grade || product.category} scrap. ${product.quantity}.`}</p>
 
-              <button>
+              <button type="button" onClick={() => onQuote(product)} disabled={!product.available}>
                 Request Quote →
               </button>
 
@@ -184,6 +169,12 @@ function Home({ onLogin, onBuyerLogin  }) {
           ))}
 
         </div>
+        {products.length === 0 && (
+          <p>{loading ? "Loading products..." : "Products will be listed here soon."}</p>
+        )}
+        <button type="button" className="home-view-products" onClick={onProducts}>
+          Browse all products
+        </button>
 
       </section>
 
@@ -262,17 +253,18 @@ function Home({ onLogin, onBuyerLogin  }) {
           pricing and bulk requirements.
         </p>
 
-        <div className="contact-buttons">
-
-          <a href="mailto:your@email.com">
-            Email Us
-          </a>
-
-          <a href="https://wa.me/919999999999">
-            WhatsApp
-          </a>
-
-        </div>
+        {(contactEmail || whatsappNumber) ? (
+          <div className="contact-buttons">
+            {contactEmail && <a href={`mailto:${contactEmail}`}>Email Us</a>}
+            {whatsappNumber && (
+              <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noreferrer">
+                WhatsApp
+              </a>
+            )}
+          </div>
+        ) : (
+          <p>Contact options will be available soon.</p>
+        )}
 
       </section>
 

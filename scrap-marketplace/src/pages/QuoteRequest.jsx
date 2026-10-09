@@ -1,16 +1,15 @@
 import "../styles/QuoteRequest.css";
+import { useState } from "react";
 
-function QuoteRequest({ product, onBack, onSubmit  }) {
+function QuoteRequest({ product, buyer, onBack, onSubmit }) {
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
     const enquiry = {
-      id: Date.now(),
-      productId: product.id,
-      product: product.name,
-      category: product.category,
+      product_id: product.id,
       quantity: formData.get("quantity").trim(),
       country: formData.get("country").trim(),
       message: formData.get("message").trim(),
@@ -20,11 +19,11 @@ function QuoteRequest({ product, onBack, onSubmit  }) {
         email: formData.get("email").trim(),
         phone: formData.get("phone").trim(),
       },
-      status: "Pending",
-      response: "",
     };
 
-    onSubmit(enquiry);
+    setSubmitting(true);
+    await onSubmit(enquiry);
+    setSubmitting(false);
   };
 
   return (
@@ -63,10 +62,7 @@ function QuoteRequest({ product, onBack, onSubmit  }) {
             {product ? product.name : "Product"}
           </h1>
 
-          <p>
-            Send us your requirement and we will
-            get back to you with pricing and availability.
-          </p>
+          <p>Submitting as {buyer.name} ({buyer.email})</p>
 
         </div>
 
@@ -75,50 +71,6 @@ function QuoteRequest({ product, onBack, onSubmit  }) {
           className="quote-form"
           onSubmit={handleSubmit}
         >
-          <div className="quote-form-group">
-            <label htmlFor="buyer-name">Your Name</label>
-            <input
-              id="buyer-name"
-              type="text"
-              name="buyerName"
-              autoComplete="name"
-              required
-            />
-          </div>
-
-          <div className="quote-form-group">
-            <label htmlFor="buyer-company">Company Name</label>
-            <input
-              id="buyer-company"
-              type="text"
-              name="company"
-              autoComplete="organization"
-              required
-            />
-          </div>
-
-          <div className="quote-form-group">
-            <label htmlFor="buyer-email">Email Address</label>
-            <input
-              id="buyer-email"
-              type="email"
-              name="email"
-              autoComplete="email"
-              required
-            />
-          </div>
-
-          <div className="quote-form-group">
-            <label htmlFor="buyer-phone">Phone Number</label>
-            <input
-              id="buyer-phone"
-              type="tel"
-              name="phone"
-              autoComplete="tel"
-              required
-            />
-          </div>
-
           <div className="quote-form-group">
 
             <label htmlFor="quote-quantity">
@@ -129,6 +81,7 @@ function QuoteRequest({ product, onBack, onSubmit  }) {
               id="quote-quantity"
               type="text"
               name="quantity"
+              maxLength="100"
               placeholder="Example: 20 MT"
               required
             />
@@ -146,6 +99,7 @@ function QuoteRequest({ product, onBack, onSubmit  }) {
               id="quote-country"
               type="text"
               name="country"
+              maxLength="100"
               placeholder="Enter country"
               required
             />
@@ -163,6 +117,7 @@ function QuoteRequest({ product, onBack, onSubmit  }) {
               id="quote-message"
               name="message"
               rows="5"
+              maxLength="5000"
               placeholder="Tell us about your requirement..."
               required
             />
@@ -173,8 +128,9 @@ function QuoteRequest({ product, onBack, onSubmit  }) {
           <button
             type="submit"
             className="submit-quote"
+            disabled={submitting}
           >
-            Submit Quote Request
+            {submitting ? "Submitting..." : "Submit Quote Request"}
           </button>
 
         </form>

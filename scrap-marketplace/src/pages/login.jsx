@@ -1,9 +1,18 @@
-import "../styles/Login.css";
+import "../styles/login.css";
+import { useState } from "react";
 
 function Login({ onBack, onLogin }) {
-  const handleSubmit = (event) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    onLogin();
+    const formData = new FormData(event.currentTarget);
+    setSubmitting(true);
+    await onLogin({
+      email: formData.get("email").trim(),
+      password: formData.get("password"),
+    });
+    setSubmitting(false);
   };
 
   return (
@@ -41,6 +50,9 @@ function Login({ onBack, onLogin }) {
 
               <input
                 type="email"
+                name="email"
+                autoComplete="username"
+                maxLength="254"
                 placeholder="Enter your email"
                 required
               />
@@ -53,6 +65,9 @@ function Login({ onBack, onLogin }) {
 
               <input
                 type="password"
+                name="password"
+                autoComplete="current-password"
+                maxLength="128"
                 placeholder="Enter your password"
                 required
               />
@@ -61,22 +76,22 @@ function Login({ onBack, onLogin }) {
 
             <div className="forgot-password">
 
-              <a href="#">
-                Forgot password?
-              </a>
+              Admin credentials are configured by the deployment administrator.
 
             </div>
 
             <button
               type="submit"
               className="login-button"
+              disabled={submitting}
             >
-              Login
+              {submitting ? "Signing in..." : "Login"}
             </button>
 
           </form>
 
           <button
+            type="button"
             className="app-back-button app-back-button--full"
             onClick={onBack}
           >

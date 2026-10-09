@@ -168,6 +168,23 @@
 }
 
 .primary-action {
+  border: 0;
+  cursor: pointer;
+}
+
+.home-view-products {
+  display: block;
+  margin: 28px auto 0;
+  padding: 11px 18px;
+  border: 1px solid #1f6f5b;
+  border-radius: 6px;
+  background: #fff;
+  color: #1f6f5b;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-action {
   background: #1f6f5b;
   color: white;
 }
